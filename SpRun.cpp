@@ -269,6 +269,7 @@ void SpRun::ParsePoints(const TensorType &semi, Points &ptsNMS)
 }
 
 
+
 void SpRun::calc(TensorType &semi, TensorType &desc, cv::Mat img
         , Points &pointsResult, Describes &describesResult)
 {

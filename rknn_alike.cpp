@@ -190,6 +190,41 @@ int main(int argc, char **argv)
     }
 }
 
+//void GetDescriptorMap(Array &input, TensorType &output) {
+//    int batch_size = input.dims[0];
+//    int channels = input.dims[1];
+//    int H = input.dims[2];
+//    int W = input.dims[3];
+//    for (int i = 0; i < batch_size; ++i) {
+//        for (int j = 0; j < channels - 1; ++j) {
+//            for (int k = 0; k < H; ++k) {
+//                for (int l = 0; l < W; ++l) {
+//                    output[i][j][k][l] = input[i][j][k][l];
+//                }
+//            }
+//        }
+//    }
+//}
+//void GetScoreMap(Array &input, TensorType &output) {
+//    int batch_size = input.dims[0];
+//    int channels = input.dims[1];
+//    int H = input.dims[2];
+//    int W = input.dims[3];
+//    for (int i = 0; i < batch_size; ++i) {
+//        for (int j = channels - 1; j < channels; ++j) {
+//            for (int k = 0; k < H; ++k) {
+//                for (int l = 0; l < W; ++l) {
+//                    output[i][j][k][l] = input[i][j][k][l];
+//                }
+//            }
+//        }
+//    }
+//}
+
+//float sigmoid(float x) {
+//    return 1.0 / (1.0 + expf(-x));
+//}
+
 int RunSuperPoint( std::string modelFile, std::string imageFile, Points &points, Describes &describes)
 {
 //    printf("开始了没有");
@@ -230,10 +265,10 @@ int RunSuperPoint( std::string modelFile, std::string imageFile, Points &points,
     printf("Bind NPU process on CPU %d\n", cpuid);
 
     _cpu_id   = 1;
-//    _n_input  = n_input;     // 这个输入是什么，看不明白
-    _n_input  = 1;     // 这个输入是什么，看不明白
+//    _n_input  = n_input;
+    _n_input  = 1;
 //    _n_output = n_output;    // and this
-    _n_output = 2;    // and this
+    _n_output = 1;    // and this
 
     // Load model
 
@@ -255,8 +290,8 @@ int RunSuperPoint( std::string modelFile, std::string imageFile, Points &points,
     }
 
     // ret = rknn_init(&ctx, model, m odel_len, RKNN_FLAG_COLLECT_PERF_MASK, NULL);
-//    init_runtime()
     ret = rknn_init(&ctx, model, model_len, 0, NULL);   // 模型初始化
+//    init_runtime();
     if(ret < 0)
     {
         printf("rknn_init fail! ret=%d\n", ret);
@@ -407,11 +442,11 @@ int RunSuperPoint( std::string modelFile, std::string imageFile, Points &points,
 
     for(int i=0;i<_n_output;i++){
         _output_buff[i] = (float*)_output_mems[i]->virt_addr;
-//        std::cout << "output.size[" << i << "]: " << _output_mems[i]->size << std::endl;
+        std::cout << "output.size[" << i << "]: " << _output_mems[i]->size << std::endl;
 //        PrintMatrix(_output_buff[i], 80);
     }
 
-//    std::cout << "运行时间：= " << perf_run.run_duration << std::endl;
+    std::cout << "模型运行时间：= " << perf_run.run_duration << std::endl;
 
     Timer timer, timerAll;
 
@@ -457,5 +492,17 @@ int RunSuperPoint( std::string modelFile, std::string imageFile, Points &points,
     timerAll.Timing("post process", true);
     timerRun.Timing("SuperPoint", true);
 
+//    Array desc_map, score_map;
+//    TensorType DescriptorMap, ScoreMap; // 获取切片
+//    GetDescriptorMap(desc_map,DescriptorMap);
+//    GetScoreMap(score_map,ScoreMap);
+//    SpRun *sr = new SpRun(score_map.dims[2], outpixNum, height, width);
+//    sr->Norm(DescriptorMap) // 标准化
+    // 切片处理
+
+    //DKD模块
+    // 特征点处理
+
 }
+
 
